@@ -9,7 +9,7 @@ forgetful
 forgetful creates ~/.forgetful/forgetful.db (sqllite3) on the first run. Editor defaults to `vim` if $EDITOR is not set.
 
 # Usage
-`forgetful add (or 'a' for short) <note name>` - opens a editor with a blank note. If the flag `-t` is used the note is marked as temporary and will expire in 24 hours.
+`forgetful add (or 'a' for short) <note name>` - opens a editor with a blank note. If the flag `-t` is used the note is marked as temporary and will expire in 24 hours. If the -p flag is set, create a note with contents from clipboard.
 
 `forgetful edit (or 'e' for short) <note name>` - opens a editor with specified note.
 
@@ -27,5 +27,5 @@ forgetful creates ~/.forgetful/forgetful.db (sqllite3) on the first run. Editor 
 
 # Todo
 
- - Create note from copy/paste-buffer
- - ..?
+ - Tests
+ - Clean up main.go

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/codegangsta/cli"
 	"github.com/gummiboll/forgetful/reader"
 	"github.com/gummiboll/forgetful/storage"
@@ -39,6 +40,10 @@ func main() {
 					Name:  "t",
 					Usage: "Mark as temporary (expires after 24 hours)",
 				},
+				cli.BoolFlag{
+					Name:  "p",
+					Usage: "Create note with contents from clipboard",
+				},
 			},
 			Action: func(c *cli.Context) {
 				if c.Args().Present() != true {
@@ -50,11 +55,24 @@ func main() {
 					fmt.Println("Note already exists")
 					return
 				}
+
 				n := storage.Note{Name: nName, Temporary: c.Bool("t")}
-				if err := writer.WriteNote(&n); err != nil {
-					fmt.Println(err)
-					return
+
+				// Only open editor if -p (read from clipboard) isnt set
+				if c.IsSet("p") {
+					nText, err := clipboard.ReadAll()
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					n.Text = nText
+				} else {
+					if err := writer.WriteNote(&n); err != nil {
+						fmt.Println(err)
+						return
+					}
 				}
+
 				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 					return
