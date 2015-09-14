@@ -15,6 +15,8 @@ forgetful creates ~/.forgetful/forgetful.db (sqllite3) on the first run. Editor 
 
 `forgetful delete (or 'd' for short) <note name>` - deletes a note.
 
+`forgetful read (or 'r' for short) <note name>` - reads a note.
+
 `forgetful list (or 'l' for short) <optional phrase>` - list notes, if phrase is specified filter results, e.g: `list foo` matches foobar, bigfoot and foo.
 
 `forgetful search (or 's' for short) <phrase>` - searches notes for phrase.

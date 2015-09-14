@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/codegangsta/cli"
+	"github.com/gummiboll/forgetful/reader"
 	"github.com/gummiboll/forgetful/storage"
 	"github.com/gummiboll/forgetful/writer"
 )
@@ -85,7 +86,7 @@ func main() {
 		},
 		{
 			Name:    "edit",
-			Aliases: []string{"e", "r"},
+			Aliases: []string{"e"},
 			Usage:   "Edit/read a note",
 			Action: func(c *cli.Context) {
 				if c.Args().Present() != true {
@@ -105,6 +106,27 @@ func main() {
 					fmt.Println(err)
 				}
 				fmt.Println(fmt.Sprintf("Updated note: %s", n.Name))
+			},
+		},
+		{
+			Name:    "read",
+			Aliases: []string{"r"},
+			Usage:   "Read a note",
+			Action: func(c *cli.Context) {
+				if c.Args().Present() != true {
+					fmt.Println("Missing argument: name")
+					return
+				}
+				nName := strings.Join(c.Args(), " ")
+				n, err := i.LoadNote(nName)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				if err := reader.ReadNote(n); err != nil {
+					fmt.Println(err)
+					return
+				}
 			},
 		},
 		{
