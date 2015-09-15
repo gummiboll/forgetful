@@ -194,6 +194,30 @@ func main() {
 			},
 		},
 		{
+			Name:  "share",
+			Usage: "Share a note (publicly) on hastebin.com",
+			Action: func(c *cli.Context) {
+				if c.Args().Present() != true {
+					fmt.Println("Missing argument: name")
+					return
+				}
+				nName := strings.Join(c.Args(), " ")
+				n, err := i.LoadNote(nName)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				url, err := reader.ShareNote(n)
+
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				fmt.Println(fmt.Sprintf("Shared note '%s': %s", n.Name, url))
+			},
+		},
+
+		{
 			Name:    "keep",
 			Aliases: []string{"k"},
 			Usage:   "Sets a temporary note as permanent",

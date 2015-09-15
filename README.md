@@ -21,6 +21,8 @@ forgetful creates ~/.forgetful/forgetful.db (sqllite3) on the first run. Editor 
 
 `forgetful search (or 's' for short) <phrase>` - searches notes for phrase.
 
+`forgetful share <note>` - shares a note (publicly) on hastebin.com
+
 `forgetful keep (or 'k' for short) <note name>` - mark a temporary note as permanent.
 
 `forgetful help (or 'h' for short)` - show help

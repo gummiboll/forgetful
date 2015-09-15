@@ -1,13 +1,22 @@
 package reader
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 
 	"github.com/gummiboll/forgetful/storage"
 )
+
+// HastebinResponse represents a response from hastebin
+type HastebinResponse struct {
+	Key string `json:"key"`
+}
 
 // ReadNote pipes a note to less
 func ReadNote(n storage.Note) (err error) {
@@ -27,4 +36,28 @@ func ReadNote(n storage.Note) (err error) {
 		return err
 	}
 	return nil
+}
+
+// ShareNote sends a note to hastebin.com
+func ShareNote(n storage.Note) (purl string, err error) {
+	resp, err := http.Post("http://hastebin.com/documents", "text", bytes.NewBuffer([]byte(n.Text)))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("Share failed, status code: %d", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("Share failed: %s", err)
+	}
+
+	hr := HastebinResponse{}
+	if json.Unmarshal(body, &hr); err != nil {
+		return "", fmt.Errorf("Share failed: %s", err)
+	}
+
+	return fmt.Sprintf("http://hastebin.com/%s", hr.Key), nil
 }
