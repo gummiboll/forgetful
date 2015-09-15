@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -14,6 +15,14 @@ import (
 )
 
 const version string = "0.9"
+
+// NoteName returns name of note and error if note isnt present
+func NoteName(c *cli.Context) (n string, err error) {
+	if c.Args().Present() != true {
+		return "", errors.New("Missing argument: name")
+	}
+	return strings.Join(c.Args(), " "), nil
+}
 
 func main() {
 	// Init
@@ -46,11 +55,12 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing argument: name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				if exists := i.NoteExists(nName); exists == true {
 					fmt.Println("Note already exists")
 					return
@@ -85,16 +95,18 @@ func main() {
 			Aliases: []string{"d"},
 			Usage:   "Delete a note",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				n, err := i.LoadNote(nName)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+
 				if i.DeleteNote(n) != nil {
 					fmt.Println(err)
 					return
@@ -107,19 +119,22 @@ func main() {
 			Aliases: []string{"e"},
 			Usage:   "Edit/read a note",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing argument: name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				n, err := i.LoadNote(nName)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+
 				if err := writer.WriteNote(&n); err != nil {
 					fmt.Println(err)
 				}
+
 				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 				}
@@ -131,16 +146,18 @@ func main() {
 			Aliases: []string{"r"},
 			Usage:   "Read a note",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing argument: name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				n, err := i.LoadNote(nName)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+
 				if err := reader.ReadNote(n); err != nil {
 					fmt.Println(err)
 					return
@@ -157,6 +174,7 @@ func main() {
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
 				}
+
 				for _, n := range notes {
 					nStr := fmt.Sprintf("* %s", n.Name)
 					if n.Temporary {
@@ -173,15 +191,17 @@ func main() {
 			Aliases: []string{"s"},
 			Usage:   "Search notes for argument",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Nothing to search for")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				notes := i.SearchNotes(nName)
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
 				}
+
 				for _, n := range notes {
 					nStr := fmt.Sprintf("* %s", n.Name)
 					if n.Temporary {
@@ -197,16 +217,18 @@ func main() {
 			Name:  "share",
 			Usage: "Share a note (publicly) on hastebin.com",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing argument: name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				n, err := i.LoadNote(nName)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+
 				url, err := reader.ShareNote(n)
 
 				if err != nil {
@@ -222,20 +244,23 @@ func main() {
 			Aliases: []string{"k"},
 			Usage:   "Sets a temporary note as permanent",
 			Action: func(c *cli.Context) {
-				if c.Args().Present() != true {
-					fmt.Println("Missing argument: name")
+				nName, err := NoteName(c)
+				if err != nil {
+					fmt.Println(err)
 					return
 				}
-				nName := strings.Join(c.Args(), " ")
+
 				n, err := i.LoadNote(nName)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+
 				n.Temporary = false
 				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 				}
+
 				fmt.Println(fmt.Sprintf("Keeping note: %s", n.Name))
 			},
 		},
