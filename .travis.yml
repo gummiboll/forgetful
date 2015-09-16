@@ -1,0 +1,9 @@
+language: go
+sudo: false
+
+go:
+        - tip
+
+script:
+        - test -z "$(gofmt -s -l . | tee /dev/stderr)"
+        - go vet ./...
