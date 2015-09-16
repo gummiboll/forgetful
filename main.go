@@ -21,6 +21,7 @@ func NoteName(c *cli.Context) (n string, err error) {
 	if c.Args().Present() != true {
 		return "", errors.New("Missing argument: name")
 	}
+
 	return strings.Join(c.Args(), " "), nil
 }
 
@@ -30,6 +31,7 @@ func main() {
 	if err := i.InitDB(); err != nil {
 		panic(err)
 	}
+
 	i.InitSchema()
 	if err := i.RemoveExpiredNotes(); err != nil {
 		panic(err)
@@ -87,6 +89,7 @@ func main() {
 					fmt.Println(err)
 					return
 				}
+
 				fmt.Println(fmt.Sprintf("Added note: %s", n.Name))
 			},
 		},
@@ -111,6 +114,7 @@ func main() {
 					fmt.Println(err)
 					return
 				}
+
 				fmt.Println(fmt.Sprintf("Deleted note: %s", nName))
 			},
 		},
@@ -138,6 +142,7 @@ func main() {
 				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 				}
+
 				fmt.Println(fmt.Sprintf("Updated note: %s", n.Name))
 			},
 		},
@@ -182,6 +187,7 @@ func main() {
 						dur := validTo.Sub(time.Now())
 						nStr += fmt.Sprintf(" (valid for %s)", dur)
 					}
+
 					fmt.Println(nStr)
 				}
 			},
@@ -209,6 +215,7 @@ func main() {
 						dur := validTo.Sub(time.Now())
 						nStr += fmt.Sprintf(" (valid for %s)", dur)
 					}
+
 					fmt.Println(nStr)
 				}
 			},
@@ -235,10 +242,10 @@ func main() {
 					fmt.Println(err)
 					return
 				}
+
 				fmt.Println(fmt.Sprintf("Shared note '%s': %s", n.Name, url))
 			},
 		},
-
 		{
 			Name:    "keep",
 			Aliases: []string{"k"},

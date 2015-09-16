@@ -16,6 +16,7 @@ func getEditor() (e string) {
 	if envEditor == "" {
 		return "vim"
 	}
+
 	return envEditor
 }
 
@@ -26,6 +27,7 @@ func WriteNote(n *storage.Note) (err error) {
 	if err := ioutil.WriteFile(tmpfile, []byte(n.Text), 0600); err != nil {
 		return err
 	}
+
 	cmd := exec.Command(editor, tmpfile)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -39,8 +41,10 @@ func WriteNote(n *storage.Note) (err error) {
 	if err != nil {
 		return err
 	}
+
 	n.Text = string(data)
 	// Cleanup
 	os.Remove(tmpfile)
+
 	return nil
 }

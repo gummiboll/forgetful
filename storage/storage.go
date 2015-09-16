@@ -31,6 +31,7 @@ func forgetfulDir() (d string) {
 	if err != nil {
 		panic(err)
 	}
+
 	fDir := fmt.Sprintf("%s/.forgetful", usr.HomeDir)
 	_, err = os.Stat(fDir)
 	if err != nil {
@@ -43,12 +44,13 @@ func forgetfulDir() (d string) {
 // InitDB tries to open db and creates one if needed
 func (i *Impl) InitDB() (err error) {
 	fDir := forgetfulDir()
-	//var err error
 	i.DB, err = gorm.Open("sqlite3", fDir+"/forgetful.db")
 	if err != nil {
 		return fmt.Errorf("Failed to connect to db, error was: %v", err)
 	}
+
 	i.DB.LogMode(false)
+
 	return nil
 }
 
@@ -63,6 +65,7 @@ func (i *Impl) NoteExists(n string) bool {
 	if err != nil {
 		return false
 	}
+
 	return true
 }
 
@@ -74,11 +77,13 @@ func (i *Impl) RemoveExpiredNotes() (err error) {
 	if err := i.DB.Where("created_at < ? and temporary == ?", timeFilter, true).Find(&notes).Error; err != nil {
 		return fmt.Errorf("Failed to search for expired notes: %v", err)
 	}
+
 	for _, n := range notes {
 		if err := i.DeleteNote(n); err != nil {
 			return fmt.Errorf("Failed to delete expired note (%s): %v", n.Name, err)
 		}
 	}
+
 	return nil
 }
 
@@ -90,6 +95,7 @@ func (i *Impl) ListNotes(f string) (n []Note) {
 	} else {
 		i.DB.Where("name LIKE ?", fmt.Sprintf("%s%s%s", "%", f, "%")).Find(&notes)
 	}
+
 	return notes
 }
 
@@ -98,6 +104,7 @@ func (i *Impl) SearchNotes(f string) (n []Note) {
 	notes := []Note{}
 	like := "%" + f + "%"
 	i.DB.Where("name LIKE ?", like).Or("text LIKE ?", like).Find(&notes)
+
 	return notes
 }
 
@@ -106,6 +113,7 @@ func (i *Impl) SaveNote(n *Note) (err error) {
 	if err := i.DB.Save(&n).Error; err != nil {
 		return fmt.Errorf("Failed to save note: %s", err)
 	}
+
 	return nil
 }
 
@@ -115,6 +123,7 @@ func (i *Impl) LoadNote(name string) (n Note, err error) {
 	if i.DB.Where("name = ? COLLATE NOCASE", name).First(&n).Error != nil {
 		return n, fmt.Errorf("Note: %s not found", name)
 	}
+
 	return n, nil
 }
 
@@ -123,5 +132,6 @@ func (i *Impl) DeleteNote(n Note) (err error) {
 	if err := i.DB.Delete(&n).Error; err != nil {
 		return fmt.Errorf("Failed to delete note: %s (id: %d)", n.Name, n.ID)
 	}
+
 	return nil
 }

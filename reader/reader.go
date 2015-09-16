@@ -28,13 +28,16 @@ func ReadNote(n storage.Note) (err error) {
 	if cmd.Start(); err != nil {
 		return err
 	}
+
 	fmt.Fprintf(stdin, n.Text)
 	if stdin.Close(); err != nil {
 		return err
 	}
+
 	if cmd.Wait(); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -44,6 +47,7 @@ func ShareNote(n storage.Note) (purl string, err error) {
 	if err != nil {
 		return "", err
 	}
+
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("Share failed, status code: %d", resp.StatusCode)
