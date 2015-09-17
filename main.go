@@ -1,29 +1,15 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
-	"strings"
-	"time"
 
-	"github.com/atotto/clipboard"
 	"github.com/codegangsta/cli"
-	"github.com/gummiboll/forgetful/reader"
+	"github.com/gummiboll/forgetful/commands"
 	"github.com/gummiboll/forgetful/storage"
-	"github.com/gummiboll/forgetful/writer"
 )
 
 const version string = "0.9"
-
-// NoteName returns name of note and error if note isnt present
-func NoteName(c *cli.Context) (n string, err error) {
-	if c.Args().Present() != true {
-		return "", errors.New("Missing argument: name")
-	}
-
-	return strings.Join(c.Args(), " "), nil
-}
 
 func main() {
 	// Init
@@ -57,35 +43,8 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
+				n, err := commands.AddCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				if exists := i.NoteExists(nName); exists == true {
-					fmt.Println("Note already exists")
-					return
-				}
-
-				n := storage.Note{Name: nName, Temporary: c.Bool("t")}
-
-				// Only open editor if -p (read from clipboard) isnt set
-				if c.IsSet("p") {
-					nText, err := clipboard.ReadAll()
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
-					n.Text = nText
-				} else {
-					if err := writer.WriteNote(&n); err != nil {
-						fmt.Println(err)
-						return
-					}
-				}
-
-				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 					return
 				}
@@ -98,24 +57,13 @@ func main() {
 			Aliases: []string{"d"},
 			Usage:   "Delete a note",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
+				n, err := commands.DeleteCommand(c, i)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
 
-				n, err := i.LoadNote(nName)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				if i.DeleteNote(n) != nil {
-					fmt.Println(err)
-					return
-				}
-
-				fmt.Println(fmt.Sprintf("Deleted note: %s", nName))
+				fmt.Println(fmt.Sprintf("Deleted note: %s", n.Name))
 			},
 		},
 		{
@@ -123,24 +71,10 @@ func main() {
 			Aliases: []string{"e"},
 			Usage:   "Edit/read a note",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
+				n, err := commands.EditCommand(c, i)
 				if err != nil {
 					fmt.Println(err)
 					return
-				}
-
-				n, err := i.LoadNote(nName)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				if err := writer.WriteNote(&n); err != nil {
-					fmt.Println(err)
-				}
-
-				if err := i.SaveNote(&n); err != nil {
-					fmt.Println(err)
 				}
 
 				fmt.Println(fmt.Sprintf("Updated note: %s", n.Name))
@@ -151,21 +85,8 @@ func main() {
 			Aliases: []string{"r"},
 			Usage:   "Read a note",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
-				if err != nil {
+				if err := commands.ReadCommand(c, i); err != nil {
 					fmt.Println(err)
-					return
-				}
-
-				n, err := i.LoadNote(nName)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				if err := reader.ReadNote(n); err != nil {
-					fmt.Println(err)
-					return
 				}
 			},
 		},
@@ -174,21 +95,14 @@ func main() {
 			Aliases: []string{"l"},
 			Usage:   "List all notes, filter result if argument i present",
 			Action: func(c *cli.Context) {
-				nName := strings.Join(c.Args(), " ")
-				notes := i.ListNotes(nName)
+				notes := commands.ListCommand(c, i)
+
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
 				}
 
 				for _, n := range notes {
-					nStr := fmt.Sprintf("* %s", n.Name)
-					if n.Temporary {
-						validTo := n.CreatedAt.Add(24 * time.Hour)
-						dur := validTo.Sub(time.Now())
-						nStr += fmt.Sprintf(" (valid for %s)", dur)
-					}
-
-					fmt.Println(nStr)
+					fmt.Println(n)
 				}
 			},
 		},
@@ -197,26 +111,18 @@ func main() {
 			Aliases: []string{"s"},
 			Usage:   "Search notes for argument",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
+				notes, err := commands.SearchCommand(c, i)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
 
-				notes := i.SearchNotes(nName)
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
 				}
 
 				for _, n := range notes {
-					nStr := fmt.Sprintf("* %s", n.Name)
-					if n.Temporary {
-						validTo := n.CreatedAt.Add(24 * time.Hour)
-						dur := validTo.Sub(time.Now())
-						nStr += fmt.Sprintf(" (valid for %s)", dur)
-					}
-
-					fmt.Println(nStr)
+					fmt.Println(n)
 				}
 			},
 		},
@@ -224,20 +130,7 @@ func main() {
 			Name:  "share",
 			Usage: "Share a note (publicly) on hastebin.com",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				n, err := i.LoadNote(nName)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				url, err := reader.ShareNote(n)
-
+				n, url, err := commands.ShareCommand(c, i)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -251,20 +144,8 @@ func main() {
 			Aliases: []string{"k"},
 			Usage:   "Sets a temporary note as permanent",
 			Action: func(c *cli.Context) {
-				nName, err := NoteName(c)
+				n, err := commands.KeepCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				n, err := i.LoadNote(nName)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				n.Temporary = false
-				if err := i.SaveNote(&n); err != nil {
 					fmt.Println(err)
 				}
 
