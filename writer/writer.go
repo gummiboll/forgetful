@@ -10,8 +10,8 @@ import (
 	"github.com/gummiboll/forgetful/storage"
 )
 
-// getEditor returns a editor. $EDITOR if its set, vim otherwise.
-func getEditor() (e string) {
+// GetEditor returns a editor. $EDITOR if its set, vim otherwise.
+func GetEditor() (e string) {
 	envEditor := os.Getenv("EDITOR")
 	if envEditor == "" {
 		return "vim"
@@ -23,7 +23,7 @@ func getEditor() (e string) {
 // WriteNote opens up a editor for Note-input
 func WriteNote(n *storage.Note) (err error) {
 	tmpfile := fmt.Sprintf("%sforgetful-%d.tmp", os.TempDir(), time.Now().Unix())
-	editor := getEditor()
+	editor := GetEditor()
 	if err := ioutil.WriteFile(tmpfile, []byte(n.Text), 0600); err != nil {
 		return err
 	}

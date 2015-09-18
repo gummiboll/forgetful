@@ -173,7 +173,7 @@ func ShareCommand(c *cli.Context, i storage.Impl) (n storage.Note, url string, e
 		return n, url, err
 	}
 
-	url, err = reader.ShareNote(n)
+	url, err = reader.ShareNote(n, "http://hastebin.com/documents")
 
 	if err != nil {
 		return n, url, err

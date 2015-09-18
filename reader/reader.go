@@ -42,8 +42,8 @@ func ReadNote(n storage.Note) (err error) {
 }
 
 // ShareNote sends a note to hastebin.com
-func ShareNote(n storage.Note) (purl string, err error) {
-	resp, err := http.Post("http://hastebin.com/documents", "text", bytes.NewBuffer([]byte(n.Text)))
+func ShareNote(n storage.Note, url string) (purl string, err error) {
+	resp, err := http.Post(url, "text", bytes.NewBuffer([]byte(n.Text)))
 	if err != nil {
 		return "", err
 	}
