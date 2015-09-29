@@ -3,6 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -13,6 +14,35 @@ import (
 	"github.com/gummiboll/forgetful/storage"
 	"github.com/gummiboll/forgetful/writer"
 )
+
+type byLetterNocase []string
+
+func (s byLetterNocase) Len() int {
+	return len(s)
+}
+func (s byLetterNocase) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s byLetterNocase) Less(i, j int) bool {
+	return strings.ToLower(s[i]) < strings.ToLower(s[j])
+}
+
+// FormatNoteList returns a formatted list of notes
+func FormatNoteList(notes []storage.Note) (rnotes []string) {
+	for _, n := range notes {
+		nStr := fmt.Sprintf("\u2023 %s", n.Name)
+		if n.Temporary {
+			validTo := n.CreatedAt.Add(24 * time.Hour)
+			dur := validTo.Sub(time.Now())
+			nStr += fmt.Sprintf(" (valid for %s)", dur)
+		}
+		rnotes = append(rnotes, nStr)
+	}
+
+	sort.Sort(byLetterNocase(rnotes))
+
+	return rnotes
+}
 
 // NoteName returns name of note and error if note isnt present
 func NoteName(c *cli.Context) (n string, err error) {
@@ -124,17 +154,7 @@ func ListCommand(c *cli.Context, i storage.Impl) (rnotes []string) {
 	nName := strings.Join(c.Args(), " ")
 	notes := i.ListNotes(nName)
 
-	for _, n := range notes {
-		nStr := fmt.Sprintf("\u2023 %s", n.Name)
-		if n.Temporary {
-			validTo := n.CreatedAt.Add(24 * time.Hour)
-			dur := validTo.Sub(time.Now())
-			nStr += fmt.Sprintf(" (valid for %s)", dur)
-		}
-		rnotes = append(rnotes, nStr)
-	}
-
-	return rnotes
+	return FormatNoteList(notes)
 
 }
 
@@ -147,18 +167,7 @@ func SearchCommand(c *cli.Context, i storage.Impl) (rnotes []string, err error) 
 
 	notes := i.SearchNotes(nName)
 
-	for _, n := range notes {
-		nStr := fmt.Sprintf("\u2023 %s", n.Name)
-		if n.Temporary {
-			validTo := n.CreatedAt.Add(24 * time.Hour)
-			dur := validTo.Sub(time.Now())
-			nStr += fmt.Sprintf(" (valid for %s)", dur)
-		}
-
-		rnotes = append(rnotes, nStr)
-	}
-
-	return rnotes, nil
+	return FormatNoteList(notes), nil
 }
 
 // ShareCommand shares a Note
