@@ -99,6 +99,8 @@ func main() {
 
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
+				} else {
+					fmt.Println("No matches")
 				}
 
 				for _, n := range notes {
@@ -119,6 +121,8 @@ func main() {
 
 				if len(notes) > 0 {
 					fmt.Println("Matching notes:")
+				} else {
+					fmt.Println("No matches")
 				}
 
 				for _, n := range notes {

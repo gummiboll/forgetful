@@ -125,7 +125,7 @@ func ListCommand(c *cli.Context, i storage.Impl) (rnotes []string) {
 	notes := i.ListNotes(nName)
 
 	for _, n := range notes {
-		nStr := fmt.Sprintf("* %s", n.Name)
+		nStr := fmt.Sprintf("\u2023 %s", n.Name)
 		if n.Temporary {
 			validTo := n.CreatedAt.Add(24 * time.Hour)
 			dur := validTo.Sub(time.Now())
@@ -148,7 +148,7 @@ func SearchCommand(c *cli.Context, i storage.Impl) (rnotes []string, err error) 
 	notes := i.SearchNotes(nName)
 
 	for _, n := range notes {
-		nStr := fmt.Sprintf("* %s", n.Name)
+		nStr := fmt.Sprintf("\u2023 %s", n.Name)
 		if n.Temporary {
 			validTo := n.CreatedAt.Add(24 * time.Hour)
 			dur := validTo.Sub(time.Now())
