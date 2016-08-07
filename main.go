@@ -42,59 +42,60 @@ func main() {
 					Usage: "Create note with contents from clipboard",
 				},
 			},
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				n, err := commands.AddCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Added note: %s", n.Name))
+				return nil
 			},
 		},
 		{
 			Name:    "delete",
 			Aliases: []string{"d"},
 			Usage:   "Delete a note",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				n, err := commands.DeleteCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Deleted note: %s", n.Name))
+				return nil
 			},
 		},
 		{
 			Name:    "edit",
 			Aliases: []string{"e"},
 			Usage:   "Edit/read a note",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				n, err := commands.EditCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Updated note: %s", n.Name))
+				return nil
 			},
 		},
 		{
 			Name:    "read",
 			Aliases: []string{"r"},
 			Usage:   "Read a note",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				if err := commands.ReadCommand(c, i); err != nil {
-					fmt.Println(err)
+					return err
 				}
+				return nil
 			},
 		},
 		{
 			Name:    "list",
 			Aliases: []string{"l"},
 			Usage:   "List all notes, filter result if argument i present",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				notes := commands.ListCommand(c, i)
 
 				if len(notes) > 0 {
@@ -106,17 +107,17 @@ func main() {
 				for _, n := range notes {
 					fmt.Println(n)
 				}
+				return nil
 			},
 		},
 		{
 			Name:    "search",
 			Aliases: []string{"s"},
 			Usage:   "Search notes for argument",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				notes, err := commands.SearchCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return err
 				}
 
 				if len(notes) > 0 {
@@ -128,32 +129,34 @@ func main() {
 				for _, n := range notes {
 					fmt.Println(n)
 				}
+				return nil
 			},
 		},
 		{
 			Name:  "share",
 			Usage: "Share a note (publicly) on hastebin.com",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				n, url, err := commands.ShareCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
-					return
+					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Shared note '%s': %s", n.Name, url))
+				return nil
 			},
 		},
 		{
 			Name:    "keep",
 			Aliases: []string{"k"},
 			Usage:   "Sets a temporary note as permanent",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				n, err := commands.KeepCommand(c, i)
 				if err != nil {
-					fmt.Println(err)
+					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Keeping note: %s", n.Name))
+				return nil
 			},
 		},
 	}
