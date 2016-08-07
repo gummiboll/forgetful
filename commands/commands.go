@@ -30,11 +30,11 @@ func (s byLetterNocase) Less(i, j int) bool {
 // FormatNoteList returns a formatted list of notes
 func FormatNoteList(notes []storage.Note) (rnotes []string) {
 	for _, n := range notes {
-		nStr := fmt.Sprintf("\u2023 %s", n.Name)
+		nStr := fmt.Sprintf("\U0001f4c3  %s", n.Name)
 		if n.Temporary {
 			validTo := n.CreatedAt.Add(24 * time.Hour)
 			dur := validTo.Sub(time.Now())
-			nStr += fmt.Sprintf(" (valid for %s)", dur)
+			nStr += fmt.Sprintf(" (\U0001f4a5 in %s) ", dur)
 		}
 		rnotes = append(rnotes, nStr)
 	}
