@@ -21,7 +21,7 @@ type Note struct {
 
 // Impl represents a gorm.DB
 type Impl struct {
-	DB gorm.DB
+	DB *gorm.DB
 }
 
 // forgetfulDir returns /path/to/.forgetful and creates it
