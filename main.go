@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/codegangsta/cli"
 	"github.com/gummiboll/forgetful/commands"
 	"github.com/gummiboll/forgetful/storage"
+	"github.com/urfave/cli"
 )
 
 const version string = "0.9"
