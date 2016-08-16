@@ -11,6 +11,19 @@ import (
 
 const version string = "1.0"
 
+func printList(notes []string) {
+	if len(notes) > 0 {
+		fmt.Println(fmt.Sprintf("Found %d matching note(s):", len(notes)))
+
+		for _, n := range notes {
+			fmt.Println(n)
+		}
+
+	} else {
+		fmt.Println("No matches")
+	}
+}
+
 func main() {
 	// Init
 	i := storage.Impl{}
@@ -98,15 +111,8 @@ func main() {
 			Action: func(c *cli.Context) error {
 				notes := commands.ListCommand(c, i)
 
-				if len(notes) > 0 {
-					fmt.Println("Matching notes:")
-				} else {
-					fmt.Println("No matches")
-				}
+				printList(notes)
 
-				for _, n := range notes {
-					fmt.Println(n)
-				}
 				return nil
 			},
 		},
@@ -120,15 +126,8 @@ func main() {
 					return err
 				}
 
-				if len(notes) > 0 {
-					fmt.Println("Matching notes:")
-				} else {
-					fmt.Println("No matches")
-				}
+				printList(notes)
 
-				for _, n := range notes {
-					fmt.Println(n)
-				}
 				return nil
 			},
 		},
