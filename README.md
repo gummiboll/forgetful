@@ -21,4 +21,5 @@ list|l|List notes|If phrase is specified, filter results on that phrase
 search|s|Search for notes
 share||Shares a note publicaly on [hastebin](http://hastebin.com)
 keep <name>|k|Mark a temporary note as permanent
+unkeep <name>|u|Mark a permanent note as temporary
 help|h|Shows help

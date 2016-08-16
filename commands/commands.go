@@ -191,8 +191,8 @@ func ShareCommand(c *cli.Context, i storage.Impl) (n storage.Note, url string, e
 	return n, url, nil
 }
 
-// KeepCommand keeps a Note
-func KeepCommand(c *cli.Context, i storage.Impl) (n storage.Note, err error) {
+// KeepCommand keeps/unkeeps a Note
+func KeepCommand(c *cli.Context, i storage.Impl, k bool) (n storage.Note, err error) {
 	nName, err := NoteName(c)
 	if err != nil {
 		return n, err
@@ -203,7 +203,7 @@ func KeepCommand(c *cli.Context, i storage.Impl) (n storage.Note, err error) {
 		return n, err
 	}
 
-	n.Temporary = false
+	n.Temporary = !k
 	if err := i.SaveNote(&n); err != nil {
 		return n, err
 	}

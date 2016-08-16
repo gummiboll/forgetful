@@ -149,12 +149,26 @@ func main() {
 			Aliases: []string{"k"},
 			Usage:   "Sets a temporary note as permanent",
 			Action: func(c *cli.Context) error {
-				n, err := commands.KeepCommand(c, i)
+				n, err := commands.KeepCommand(c, i, true)
 				if err != nil {
 					return err
 				}
 
 				fmt.Println(fmt.Sprintf("Keeping note: %s", n.Name))
+				return nil
+			},
+		},
+		{
+			Name:    "unkeep",
+			Aliases: []string{"u"},
+			Usage:   "Sets a permanent note as temporary",
+			Action: func(c *cli.Context) error {
+				n, err := commands.KeepCommand(c, i, false)
+				if err != nil {
+					return err
+				}
+
+				fmt.Println(fmt.Sprintf("Unkeeping note: %s", n.Name))
 				return nil
 			},
 		},
