@@ -74,7 +74,7 @@ func (i *Impl) NoteExists(n string) bool {
 func (i *Impl) RemoveExpiredNotes() (err error) {
 	notes := []Note{}
 	timeFilter := time.Now().Add(-24 * time.Hour)
-	if err := i.DB.Where("created_at < ? and temporary == ?", timeFilter, true).Find(&notes).Error; err != nil {
+	if err := i.DB.Where("updated_at < ? and temporary == ?", timeFilter, true).Find(&notes).Error; err != nil {
 		return fmt.Errorf("Failed to search for expired notes: %v", err)
 	}
 
