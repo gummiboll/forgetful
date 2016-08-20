@@ -151,6 +151,21 @@ func ReadCommand(c *cli.Context, i storage.Impl) (err error) {
 	return nil
 }
 
+// InfoCommand shows information about a Note
+func InfoCommand(c *cli.Context, i storage.Impl) (n storage.Note, err error) {
+	nName, err := NoteName(c)
+	if err != nil {
+		return storage.Note{}, err
+	}
+
+	n, err = i.LoadNote(nName)
+	if err != nil {
+		return storage.Note{}, err
+	}
+
+	return n, nil
+}
+
 // RenameCommand renames a Note
 func RenameCommand(c *cli.Context, i storage.Impl) (nName string, newName string, err error) {
 	nName, err = NoteName(c)

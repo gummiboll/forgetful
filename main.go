@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/gummiboll/forgetful/commands"
 	"github.com/gummiboll/forgetful/storage"
@@ -21,6 +22,16 @@ func printList(notes []string) {
 
 	} else {
 		fmt.Println("No matches")
+	}
+}
+
+func printInfo(n storage.Note) {
+	fmt.Println(fmt.Sprintf("%s:", n.Name))
+	fmt.Println(fmt.Sprintf("Created at: %s, last updated at: %s", n.CreatedAt.Format("2006-01-02 15:04"), n.UpdatedAt.Format("2006-01-02 15:04")))
+	if n.Temporary == true {
+		validTo := n.UpdatedAt.Add(24 * time.Hour)
+		dur := validTo.Sub(time.Now())
+		fmt.Println(fmt.Sprintf("Is temporary, will expire in %s", dur-(dur%time.Second)))
 	}
 }
 
@@ -90,6 +101,21 @@ func main() {
 				}
 
 				fmt.Println(fmt.Sprintf("Updated note: %s", n.Name))
+				return nil
+			},
+		},
+		{
+			Name:    "info",
+			Aliases: []string{"i"},
+			Usage:   "Prints information about a note",
+			Action: func(c *cli.Context) error {
+				n, err := commands.InfoCommand(c, i)
+				if err != nil {
+					return err
+				}
+
+				printInfo(n)
+
 				return nil
 			},
 		},

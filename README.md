@@ -16,6 +16,7 @@ command|short|description|optional arguments
 add <name>|a|Adds a note|-p (from contents of clipboard) -t (temporary note, expires afer 24h)
 edit <name>|e|Edit a note
 delete <name>|d|Deletes a note
+info <name>|i|Shows information about a note
 read <name>|r|Reads a note
 rename <name>|mv|Renames a note
 list|l|List notes|If phrase is specified, filter results on that phrase
