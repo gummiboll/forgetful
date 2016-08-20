@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version string = "1.0"
+const version string = "1.1"
 
 func printList(notes []string) {
 	if len(notes) > 0 {
