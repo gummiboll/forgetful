@@ -86,6 +86,29 @@ func TestSearchNotes(t *testing.T) {
 	}
 }
 
+func TestRenameNote(t *testing.T) {
+	n, err := i.LoadNote("a test")
+	if err != nil {
+		t.Errorf("Failed to load note (%s)", err)
+	}
+
+	err = i.RenameNote(n.ID, "a renamed note")
+	if err != nil {
+		t.Errorf("Failed to rename note (%s)", err)
+	}
+
+	n, err = i.LoadNote("a test")
+	if err == nil {
+		t.Errorf("Note should not exist because it was renamed (%s)", err)
+	}
+
+	n, err = i.LoadNote("a renamed note")
+	if err != nil {
+		t.Errorf("Failed to load note after its renamed (%s)", err)
+	}
+
+}
+
 /*
 Figure out a better way to do this test
 func TestRemoveExpiredNotes(t *testing.T) {

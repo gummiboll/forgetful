@@ -105,6 +105,21 @@ func main() {
 			},
 		},
 		{
+			Name:    "rename",
+			Aliases: []string{"mv"},
+			Usage:   "Rename a note",
+			Action: func(c *cli.Context) error {
+				nName, newName, err := commands.RenameCommand(c, i)
+				if err != nil {
+					return err
+				}
+
+				fmt.Println(fmt.Sprintf("Renamed %s to %s", nName, newName))
+
+				return nil
+			},
+		},
+		{
 			Name:    "list",
 			Aliases: []string{"l"},
 			Usage:   "List all notes, filter result if argument i present",

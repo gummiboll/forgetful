@@ -17,6 +17,7 @@ add <name>|a|Adds a note|-p (from contents of clipboard) -t (temporary note, exp
 edit <name>|e|Edit a note
 delete <name>|d|Deletes a note
 read <name>|r|Reads a note
+rename <name>|mv|Renames a note
 list|l|List notes|If phrase is specified, filter results on that phrase
 search|s|Search for notes
 share||Shares a note publicaly on [hastebin](http://hastebin.com)

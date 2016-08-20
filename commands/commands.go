@@ -1,8 +1,10 @@
 package commands
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -147,6 +149,42 @@ func ReadCommand(c *cli.Context, i storage.Impl) (err error) {
 	}
 
 	return nil
+}
+
+// RenameCommand renames a Note
+func RenameCommand(c *cli.Context, i storage.Impl) (nName string, newName string, err error) {
+	nName, err = NoteName(c)
+	if err != nil {
+		return nName, newName, err
+	}
+
+	n, err := i.LoadNote(nName)
+	if err != nil {
+		return nName, newName, err
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(fmt.Sprintf("Rename note '%s' to: ", n.Name))
+	newName, err = reader.ReadString('\n')
+	if err != nil {
+		return nName, newName, err
+	}
+
+	newName = strings.Trim(newName, "\n")
+
+	if newName == "" {
+		return nName, newName, errors.New("Note name can't be blank")
+	}
+
+	if i.NoteExists(newName) == true {
+		return nName, newName, fmt.Errorf("Note '%s' already exists", newName)
+	}
+
+	if err = i.RenameNote(n.ID, newName); err != nil {
+		return nName, newName, fmt.Errorf("Failed to rename note '%s' to '%s'.", nName, newName)
+	}
+
+	return nName, newName, nil
 }
 
 // ListCommand lists Notes

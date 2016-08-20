@@ -135,3 +135,12 @@ func (i *Impl) DeleteNote(n Note) (err error) {
 
 	return nil
 }
+
+// RenameNote renames a notes
+func (i *Impl) RenameNote(nID uint, newName string) (err error) {
+	if err := i.DB.Model(&Note{}).Where("id = ?", nID).Update("name", newName).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
