@@ -36,7 +36,7 @@ func FormatNoteList(notes []storage.Note) (rnotes []string) {
 		if n.Temporary {
 			validTo := n.UpdatedAt.Add(24 * time.Hour)
 			dur := validTo.Sub(time.Now())
-			nStr += fmt.Sprintf(" (\U0001f4a5 in %s) ", dur)
+			nStr += fmt.Sprintf(" (\U0001f4a5 in %s) ", dur-(dur%time.Second))
 		}
 		rnotes = append(rnotes, nStr)
 	}
